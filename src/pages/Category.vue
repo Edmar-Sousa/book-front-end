@@ -1,7 +1,7 @@
 <template>
 
     <div class="pt-10">
-        <h1 class="text-3xl font-bold">Cadastro de Autores:</h1>
+        <h1 class="text-3xl font-bold">Cadastro de Categorias:</h1>
         
         <div class="mt-10 mb-5 text-right">
             <Button label="Adicionar"></Button>
@@ -29,11 +29,11 @@ import Column from 'primevue/column'
 
 
 const products = [
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
+    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
+    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
+    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
+    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
+    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
 ]
 
 </script>

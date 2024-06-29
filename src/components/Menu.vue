@@ -29,7 +29,7 @@ const items = [
 
     {
         label: 'Categorias',
-        command: () => router.push('/category')
+        command: () => router.push('/categorys')
     },
 ];
 
