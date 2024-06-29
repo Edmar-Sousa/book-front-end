@@ -19,9 +19,17 @@
         </data-table>
     </div>
 
+    <Model
+        title="Cadastrar um novo livro">
+            <text-input
+                label="Titulo do livro:" />
+    </Model>
 </template>
 
 <script setup lang="ts">
+
+import Model from '@/components/Modal.vue'
+import TextInput from '@/components/TextInput.vue'
 
 import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
