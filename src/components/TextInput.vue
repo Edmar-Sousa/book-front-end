@@ -9,7 +9,7 @@
 
         <input
             :type="type"
-            class="w-full h-10 rounded-lg my-3 border border-[#3f3f46] px-4 focus:outline-none focus:ring focus:ring-[#34d399]"
+            class="w-full h-10 rounded-lg my-3 border border-[#3f3f46] px-4 focus:outline-none focus:ring focus:ring-[#34d399] bg-[#09090b]"
     </div>
 
 </template>
