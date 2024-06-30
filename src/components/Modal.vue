@@ -17,7 +17,7 @@ import { shallowRef } from 'vue'
 import Dialog from 'primevue/dialog'
 
 
-const visible = shallowRef(true)
+const visible = shallowRef(false)
 
 
 defineProps<{
