@@ -4,7 +4,9 @@
         <h1 class="text-3xl font-bold">Cadastro de Categorias:</h1>
         
         <div class="mt-10 mb-5 text-right">
-            <Button label="Adicionar"></Button>
+            <Button 
+                label="Adicionar"
+                @click="handlerCreateCategory"></Button>
         </div>
 
         <data-table 
@@ -20,6 +22,7 @@
     </div>
 
     <Model
+        ref="modalRef"
         title="Cadastrar uma nova categoria">
             <form @submit.prevent>
                 <text-input
@@ -37,6 +40,8 @@
 
 <script setup lang="ts">
 
+import { ref } from 'vue'
+
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
 
@@ -52,5 +57,15 @@ const products = [
     { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
     { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
 ]
+
+
+
+const modalRef = ref()
+
+
+function handlerCreateCategory() {
+    if (modalRef.value)
+        modalRef.value?.showModal()
+}
 
 </script>
