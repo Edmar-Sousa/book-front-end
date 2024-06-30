@@ -28,10 +28,14 @@
                 <text-input
                     id="category-name"
                     type="text"
-                    label="Titulo da categoria" />
+                    label="Titulo da categoria"
+                    v-model="form.name"
+                    :error="v$.name?.$errors[0]?.$message" />
 
                 <div class="text-right mt-4">
-                    <Button label="Cadastrar"></Button>
+                    <Button 
+                        label="Cadastrar"
+                        @click="handlerCategoryForm"></Button>
                 </div>
             </form>
     </Model>
@@ -41,6 +45,8 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
+import { helpers, required } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core'
 
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
@@ -67,5 +73,31 @@ function handlerCreateCategory() {
     if (modalRef.value)
         modalRef.value?.showModal()
 }
+
+
+const form = ref({
+    name: null,
+})
+
+const rules = {
+    name: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    },
+}
+
+
+const v$ = useVuelidate(rules, form)
+
+
+function handlerCategoryForm() {
+    v$.value.$validate()
+
+
+    if (v$.value.$error)
+        return
+
+    console.log(form.value)
+}
+
 
 </script>
