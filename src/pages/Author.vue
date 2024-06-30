@@ -4,7 +4,9 @@
         <h1 class="text-3xl font-bold">Cadastro de Autores:</h1>
         
         <div class="mt-10 mb-5 text-right">
-            <Button label="Adicionar"></Button>
+            <Button 
+                label="Adicionar">
+            </Button>
         </div>
 
         <data-table 
@@ -19,9 +21,27 @@
         </data-table>
     </div>
 
+
+    <Model
+        title="Cadastrar um novo autor">
+            <form @submit.prevent>
+                <text-input
+                    id="author-name"
+                    type="text"
+                    label="Nome do autor" />
+
+                <div class="text-right mt-4">
+                    <Button label="Cadastrar"></Button>
+                </div>
+            </form>
+    </Model>
+
 </template>
 
 <script setup lang="ts">
+
+import Model from '@/components/Modal.vue'
+import TextInput from '@/components/TextInput.vue'
 
 import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
