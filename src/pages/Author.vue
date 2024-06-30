@@ -5,7 +5,8 @@
         
         <div class="mt-10 mb-5 text-right">
             <Button 
-                label="Adicionar">
+                label="Adicionar"
+                @click="handlerCreateAuthor">
             </Button>
         </div>
 
@@ -23,6 +24,7 @@
 
 
     <Model
+        ref="modalRef"
         title="Cadastrar um novo autor">
             <form @submit.prevent>
                 <text-input
@@ -40,6 +42,8 @@
 
 <script setup lang="ts">
 
+import { ref } from 'vue'
+
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
 
@@ -56,4 +60,12 @@ const products = [
     { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
 ]
 
+
+const modalRef = ref()
+
+
+function handlerCreateAuthor() {
+    if (modalRef.value)
+        modalRef.value?.showModal()
+}
 </script>

@@ -4,7 +4,10 @@
         <h1 class="text-3xl font-bold">Cadastro de Livros:</h1>
         
         <div class="mt-10 mb-5 text-right">
-            <Button label="Adicionar"></Button>
+            <Button 
+                @click="handlerCreateBooks"
+                label="Adicionar">
+            </Button>
         </div>
 
         <data-table 
@@ -20,6 +23,7 @@
     </div>
 
     <Model
+        ref="modalRef"
         title="Cadastrar um novo livro">
             <form @submit.prevent>
                 <text-input
@@ -96,5 +100,14 @@ const categorias = [
 const form = ref({
     category: [],
 })
+
+
+const modalRef = ref()
+
+
+function handlerCreateBooks() {
+    if (modalRef.value)
+        modalRef.value?.showModal()
+}
 
 </script>
