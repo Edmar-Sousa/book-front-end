@@ -19,9 +19,26 @@
         </data-table>
     </div>
 
+    <Model
+        title="Cadastrar uma nova categoria">
+            <form @submit.prevent>
+                <text-input
+                    id="category-name"
+                    type="text"
+                    label="Titulo da categoria" />
+
+                <div class="text-right mt-4">
+                    <Button label="Cadastrar"></Button>
+                </div>
+            </form>
+    </Model>
+
 </template>
 
 <script setup lang="ts">
+
+import Model from '@/components/Modal.vue'
+import TextInput from '@/components/TextInput.vue'
 
 import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
