@@ -25,22 +25,32 @@
     <Model
         ref="modalRef"
         title="Cadastrar um novo livro">
+            <div>
+                {{ v$.authors?.$errors[0]?.$message }}
+            </div>
+
             <form @submit.prevent>
                 <text-input
                     id="title-book"
                     type="text"
-                    label="Titulo do livro:" />
+                    label="Titulo do livro:"
+                    v-model="form.title"
+                    :error="v$.title?.$errors[0]?.$message" />
     
                 <area-input
                     id="description"
-                    label="Descrição:" />
+                    label="Descrição:"
+                    v-model="form.description"
+                    :error="v$.description?.$errors[0]?.$message" />
     
                 <select-input
                     id="author-select"
                     label="Selecione os autores:"
                     :options="authors"
                     option-label="name"
-                    option-value="id" />
+                    option-value="id"
+                    v-model="form.authors"
+                    :error="v$.authors?.$errors[0]?.$message" />
     
                 <select-input
                     id="category-select"
@@ -48,10 +58,14 @@
                     :options="categorias"
                     option-label="name" 
                     option-value="id"
-                    v-model="form.category" />
+                    v-model="form.categorys"
+                    :error="v$.categorys?.$errors[0]?.$message" />
 
                 <div class="text-right mt-4">
-                    <Button label="Cadastrar"></Button>
+                    <Button 
+                        label="Cadastrar"
+                        @click="handlerBookForm">
+                    </Button>
                 </div>
             </form>
     </Model>
@@ -60,6 +74,9 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
+
+import { helpers, required } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core'
 
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
@@ -98,8 +115,40 @@ const categorias = [
 
 
 const form = ref({
-    category: [],
+    title: null,
+    description: null,
+    categorys: [],
+    authors: [],
 })
+
+const rules = {
+    title: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    },
+    description: {
+        required: helpers.withMessage('O campo é obrigatorio', required),
+    },
+    categorys: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    },
+    authors: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    },
+}
+
+
+const v$ = useVuelidate(rules, form)
+
+
+function handlerBookForm() {
+    v$.value.$validate()
+
+
+    if (v$.value.$error)
+        return
+
+    console.log(form.value)
+}
 
 
 const modalRef = ref()
