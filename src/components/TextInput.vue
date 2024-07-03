@@ -26,27 +26,12 @@
 import { computed } from 'vue'
 
 
-const props = defineProps({
-    id: {
-        type: String,
-        required: true,
-    },
-
-    label: {
-        type: String,
-        required: false,
-    },
-
-    type: {
-        type: String,
-        required: true,
-    },
-
-    error: {
-        type: String,
-        required: false,
-    }
-})
+const props = defineProps<{
+    id: string,
+    label?: string,
+    type: string,
+    error?: string
+}>()
 
 
 const hasError = computed(() => props.error && props.error.length)

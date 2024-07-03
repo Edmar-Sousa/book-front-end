@@ -30,7 +30,7 @@
                     type="text"
                     label="Titulo da categoria"
                     v-model="form.name"
-                    :error="v$.name?.$errors[0]?.$message" />
+                    :error="v$.name?.$errors[0]?.$message.toString" />
 
                 <div class="text-right mt-4">
                     <Button 

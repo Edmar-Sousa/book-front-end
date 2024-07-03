@@ -1,5 +1,9 @@
 <template>
 
+    <p>result: {{ result }}</p> 
+    <p>loadding: {{ loading }}</p>
+    <p>error: {{ error }}</p>
+
     <div class="pt-10">
         <h1 class="text-3xl font-bold">Cadastro de Autores:</h1>
         
@@ -32,7 +36,7 @@
                     type="text"
                     label="Nome do autor"
                     v-model="form.name"
-                    :error="v$.name?.$errors[0]?.$message" />
+                    :error="v$.name?.$errors[0]?.$message.toString" />
 
                 <div class="text-right mt-4">
                     <Button 
@@ -58,6 +62,11 @@ import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 
+import { useQuery } from '@vue/apollo-composable'
+import { AUTHORS_QUERY } from '@/querys/authors'
+
+
+const { result, loading, error } = useQuery(AUTHORS_QUERY)
 
 const products = [
     { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },

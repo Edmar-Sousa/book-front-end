@@ -25,9 +25,6 @@
     <Model
         ref="modalRef"
         title="Cadastrar um novo livro">
-            <div>
-                {{ v$.authors?.$errors[0]?.$message }}
-            </div>
 
             <form @submit.prevent>
                 <text-input
@@ -35,13 +32,13 @@
                     type="text"
                     label="Titulo do livro:"
                     v-model="form.title"
-                    :error="v$.title?.$errors[0]?.$message" />
+                    :error="v$.title?.$errors[0]?.$message.toString" />
     
                 <area-input
                     id="description"
                     label="Descrição:"
                     v-model="form.description"
-                    :error="v$.description?.$errors[0]?.$message" />
+                    :error="v$.description?.$errors[0]?.$message.toString" />
     
                 <select-input
                     id="author-select"
@@ -50,7 +47,7 @@
                     option-label="name"
                     option-value="id"
                     v-model="form.authors"
-                    :error="v$.authors?.$errors[0]?.$message" />
+                    :error="v$.authors?.$errors[0]?.$message.toString" />
     
                 <select-input
                     id="category-select"
@@ -59,7 +56,7 @@
                     option-label="name" 
                     option-value="id"
                     v-model="form.categorys"
-                    :error="v$.categorys?.$errors[0]?.$message" />
+                    :error="v$.categorys?.$errors[0]?.$message.toString" />
 
                 <div class="text-right mt-4">
                     <Button 
