@@ -1,9 +1,5 @@
 <template>
 
-    <p>result: {{ result }}</p> 
-    <p>loadding: {{ loading }}</p>
-    <p>error: {{ error }}</p>
-
     <div class="pt-10">
         <h1 class="text-3xl font-bold">Cadastro de Autores:</h1>
         
@@ -14,16 +10,46 @@
             </Button>
         </div>
 
-        <data-table 
-            :value="products"
-            striped-rows
-            paginator
-            :rows="5"
-            :rows-per-page-options="[5, 10, 20, 50]">
-                <column field="code" header="Id" />
-                <column field="title" header="Title" />
-                <column field="year" header="Ano" />
-        </data-table>
+        <!-- MY Suspense component ;) -->
+        <template v-if="loading">
+            <data-table 
+                :value="loaddingSkeletonTable"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+
+                    <column field="name" header="Title">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+                    
+                    <column field="bio" header="Ano">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+            </data-table>
+        </template>
+
+        <template v-else>
+            <data-table 
+                :value="authors"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id" />
+                    <column field="name" header="Title" />
+                    <column field="bio" header="Ano" />
+            </data-table>
+        </template>
     </div>
 
 
@@ -51,13 +77,14 @@
 
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { helpers, required } from '@vuelidate/validators'
 
 import useVuelidate from '@vuelidate/core'
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
 
+import Skeleton from 'primevue/skeleton'
 import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -66,16 +93,10 @@ import { useQuery } from '@vue/apollo-composable'
 import { AUTHORS_QUERY } from '@/querys/authors'
 
 
-const { result, loading, error } = useQuery(AUTHORS_QUERY)
+const { result, loading } = useQuery(AUTHORS_QUERY)
 
-const products = [
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-    { code: '1231123312', title: 'Robert C. Martin', year: '2023-06-23' },
-]
-
+const authors = computed(() => result.value?.listAuthors)
+const loaddingSkeletonTable = new Array(4)
 
 const modalRef = ref()
 
