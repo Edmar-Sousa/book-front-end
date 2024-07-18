@@ -10,46 +10,10 @@
             </Button>
         </div>
 
-        <template v-if="loading">
-            <data-table 
-                :value="loaddingSkeletonTable"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-
-                    <column field="name" header="Title">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-                    
-                    <column field="bio" header="Ano">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-            </data-table>
-        </template>
-
-        <template v-else>
-            <data-table 
-                :value="books"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id" />
-                    <column field="title" header="Title" />
-                    <column field="year" header="Ano" />
-            </data-table>
-        </template>
-
+        <table-component
+            :is-loading="loading"
+            :data="books"
+            :columns="columns" />
     </div>
 
     <Model
@@ -110,21 +74,25 @@ import TextInput from '@/components/TextInput.vue'
 import AreaInput from '@/components/AreaInput.vue'
 import SelectInput from '@/components/SelectInput.vue'
 
+import TableComponent from '@/components/TableComponent.vue'
 
-import Skeleton from 'primevue/skeleton'
-import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
-import Column from 'primevue/column'
 
 import { useQuery } from '@vue/apollo-composable'
 import { BOOKS_QUERY } from '@/querys/books'
+import { ColumnType } from '@/interfaces/TableColumnType'
 
 
 const { result, loading } = useQuery(BOOKS_QUERY)
-const loaddingSkeletonTable = new Array(4)
 
-const books = computed(() => result.value.listBooks)
+const books = computed(() => result.value ? result.value.listBooks : [])
 
+
+const columns : Array<ColumnType> = [
+    { field: 'id', header: 'Id' },
+    { field: 'title', header: 'Titulo' },
+    { field: 'year', header: 'Ano' },
+]
 
 const authors = [
     { id: 1, name: 'Robert C. Martin' },
