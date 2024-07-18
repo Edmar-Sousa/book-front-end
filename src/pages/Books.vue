@@ -10,16 +10,46 @@
             </Button>
         </div>
 
-        <data-table 
-            :value="products"
-            striped-rows
-            paginator
-            :rows="5"
-            :rows-per-page-options="[5, 10, 20, 50]">
-                <column field="code" header="Id" />
-                <column field="title" header="Title" />
-                <column field="year" header="Ano" />
-        </data-table>
+        <template v-if="loading">
+            <data-table 
+                :value="loaddingSkeletonTable"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+
+                    <column field="name" header="Title">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+                    
+                    <column field="bio" header="Ano">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+            </data-table>
+        </template>
+
+        <template v-else>
+            <data-table 
+                :value="books"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id" />
+                    <column field="title" header="Title" />
+                    <column field="year" header="Ano" />
+            </data-table>
+        </template>
+
     </div>
 
     <Model
@@ -70,7 +100,7 @@
 
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import { helpers, required } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
@@ -80,18 +110,20 @@ import TextInput from '@/components/TextInput.vue'
 import AreaInput from '@/components/AreaInput.vue'
 import SelectInput from '@/components/SelectInput.vue'
 
+
+import Skeleton from 'primevue/skeleton'
 import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 
+import { useQuery } from '@vue/apollo-composable'
+import { BOOKS_QUERY } from '@/querys/books'
 
-const products = [
-    { code: '1231123312', title: 'O codificador limpo', year: '2023-06-23' },
-    { code: '1231123312', title: 'O codificador limpo', year: '2023-06-23' },
-    { code: '1231123312', title: 'O codificador limpo', year: '2023-06-23' },
-    { code: '1231123312', title: 'O codificador limpo', year: '2023-06-23' },
-    { code: '1231123312', title: 'O codificador limpo', year: '2023-06-23' },
-]
+
+const { result, loading } = useQuery(BOOKS_QUERY)
+const loaddingSkeletonTable = new Array(4)
+
+const books = computed(() => result.value.listBooks)
 
 
 const authors = [
