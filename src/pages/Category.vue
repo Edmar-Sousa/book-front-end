@@ -9,44 +9,6 @@
                 @click="handlerCreateCategory"></Button>
         </div>
 
-        <!-- <template v-if="loading">
-            <data-table 
-                :value="loaddingSkeletonTable"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-
-                    <column field="name" header="Title">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-                    
-                    <column field="bio" header="Ano">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-            </data-table>
-        </template>
-
-        <template v-else>
-            <data-table 
-                :value="category"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id" />
-                    <column field="title" header="Title" />
-            </data-table>
-        </template> -->
 
         <table-component
             :is-loading="loading"
@@ -96,7 +58,7 @@ import { ColumnType } from '@/interfaces/TableColumnType'
 
 
 const { result, loading } = useQuery(CATEGORYS_QUERY)
-const category = computed(() => result.value.listCategory)
+const category = computed(() =>  result.value ? result.value.listCategory : [])
 
 const columns: Array<ColumnType> = [
     { field: 'id', header: 'ID' },
