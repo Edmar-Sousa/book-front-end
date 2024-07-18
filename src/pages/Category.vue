@@ -9,16 +9,49 @@
                 @click="handlerCreateCategory"></Button>
         </div>
 
-        <data-table 
-            :value="products"
-            striped-rows
-            paginator
-            :rows="5"
-            :rows-per-page-options="[5, 10, 20, 50]">
-                <column field="code" header="Id" />
-                <column field="title" header="Title" />
-                <column field="year" header="Ano" />
-        </data-table>
+        <!-- <template v-if="loading">
+            <data-table 
+                :value="loaddingSkeletonTable"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+
+                    <column field="name" header="Title">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+                    
+                    <column field="bio" header="Ano">
+                        <template #body>
+                            <skeleton />
+                        </template>
+                    </column>
+            </data-table>
+        </template>
+
+        <template v-else>
+            <data-table 
+                :value="category"
+                striped-rows
+                paginator
+                :rows="5"
+                :rows-per-page-options="[5, 10, 20, 50]">
+                    <column field="id" header="Id" />
+                    <column field="title" header="Title" />
+            </data-table>
+        </template> -->
+
+        <table-component
+            :is-loading="loading"
+            :data="category"
+            :columns="columns" />
     </div>
 
     <Model
@@ -44,24 +77,30 @@
 
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+
 import { helpers, required } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
 
-import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
-import Column from 'primevue/column'
+
+import TableComponent from '@/components/TableComponent.vue'
+
+import { useQuery } from '@vue/apollo-composable'
+import { CATEGORYS_QUERY } from '@/querys/category'
+import { ColumnType } from '@/interfaces/TableColumnType'
 
 
-const products = [
-    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
-    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
-    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
-    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
-    { code: '1231123312', title: 'Programação de computadores', year: '2023-06-23' },
+
+const { result, loading } = useQuery(CATEGORYS_QUERY)
+const category = computed(() => result.value.listCategory)
+
+const columns: Array<ColumnType> = [
+    { field: 'id', header: 'ID' },
+    { field: 'title', header: 'Titulo' },
 ]
 
 
@@ -96,7 +135,6 @@ function handlerCategoryForm() {
     if (v$.value.$error)
         return
 
-    console.log(form.value)
 }
 
 
