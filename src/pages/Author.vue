@@ -64,7 +64,7 @@ import { ColumnType } from '@/interfaces/TableColumnType'
 import TableComponent from '@/components/TableComponent.vue'
 
 
-const { result, loading } = useQuery(AUTHORS_QUERY)
+const { result, loading, refetch: refetchAuthors } = useQuery(AUTHORS_QUERY)
 
 const authors = computed(() => result.value ? result.value?.listAuthors : [])
 
@@ -101,8 +101,19 @@ const rules = {
 
 const v$ = useVuelidate(rules, form)
 
-const {mutate: addAuthor} = useMutation(AUTHORS_STORE)
 
+const {mutate: addAuthor, onDone: doneStoreAuthor} = useMutation(AUTHORS_STORE)
+
+
+doneStoreAuthor(() => {
+    form.value = {
+        name: '',
+        bio: '',
+    }
+
+    modalRef.value.closeModal()
+    refetchAuthors()
+})
 
 function handlerPostForm() {
     v$.value.$validate()
