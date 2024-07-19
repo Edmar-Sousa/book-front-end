@@ -10,7 +10,8 @@
         <input
             :id="id"
             :type="type"
-            class="w-full h-10 rounded-lg my-3 border border-[#3f3f46] px-4 focus:outline-none focus:ring focus:ring-[#34d399] bg-[#09090b]" />
+            class="w-full h-10 rounded-lg my-3 border border-[#3f3f46] px-4 focus:outline-none focus:ring focus:ring-[#34d399] bg-[#09090b]"
+            v-model="model" />
 
         <small 
             v-if="hasError" 
@@ -33,6 +34,7 @@ const props = defineProps<{
     error?: string
 }>()
 
+const model = defineModel()
 
 const hasError = computed(() => props.error && props.error.length)
 
