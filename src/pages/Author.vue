@@ -10,46 +10,10 @@
             </Button>
         </div>
 
-        <!-- MY Suspense component ;) -->
-        <template v-if="loading">
-            <data-table 
-                :value="loaddingSkeletonTable"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-
-                    <column field="name" header="Title">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-                    
-                    <column field="bio" header="Ano">
-                        <template #body>
-                            <skeleton />
-                        </template>
-                    </column>
-            </data-table>
-        </template>
-
-        <template v-else>
-            <data-table 
-                :value="authors"
-                striped-rows
-                paginator
-                :rows="5"
-                :rows-per-page-options="[5, 10, 20, 50]">
-                    <column field="id" header="Id" />
-                    <column field="name" header="Title" />
-                    <column field="bio" header="Ano" />
-            </data-table>
-        </template>
+        <table-component
+            :is-loading="loading"
+            :data="authors"
+            :columns="columns" />
     </div>
 
 
@@ -84,22 +48,26 @@ import useVuelidate from '@vuelidate/core'
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
 
-import Skeleton from 'primevue/skeleton'
-import DataTable from 'primevue/datatable'
 import Button from 'primevue/button'
-import Column from 'primevue/column'
 
 import { useQuery } from '@vue/apollo-composable'
 import { AUTHORS_QUERY } from '@/querys/authors'
+import { ColumnType } from '@/interfaces/TableColumnType'
+
+import TableComponent from '@/components/TableComponent.vue'
 
 
 const { result, loading } = useQuery(AUTHORS_QUERY)
 
-const authors = computed(() => result.value?.listAuthors)
-const loaddingSkeletonTable = new Array(4)
+const authors = computed(() => result.value ? result.value?.listAuthors : [])
 
 const modalRef = ref()
 
+const columns: Array<ColumnType> = [
+    { field: 'id', header: 'Id' },
+    { field: 'name', header: 'Title' },
+    { field: 'bio', header: 'Ano' },
+]
 
 function handlerCreateAuthor() {
     if (modalRef.value)
