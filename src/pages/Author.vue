@@ -26,7 +26,14 @@
                     type="text"
                     label="Nome do autor"
                     v-model="form.name"
-                    :error="v$.name?.$errors[0]?.$message.toString" />
+                    :error="v$.name?.$errors[0]?.$message.toString()" />
+
+                <text-input
+                    id="author-bio"
+                    type="text"
+                    label="Bibliografia do autor"
+                    v-model="form.bio"
+                    :error="v$.bio?.$errors[0]?.$message.toString()" />
 
                 <div class="text-right mt-4">
                     <Button 
@@ -50,8 +57,8 @@ import TextInput from '@/components/TextInput.vue'
 
 import Button from 'primevue/button'
 
-import { useQuery } from '@vue/apollo-composable'
-import { AUTHORS_QUERY } from '@/querys/authors'
+import { useQuery, useMutation } from '@vue/apollo-composable'
+import { AUTHORS_QUERY, AUTHORS_STORE } from '@/querys/authors'
 import { ColumnType } from '@/interfaces/TableColumnType'
 
 import TableComponent from '@/components/TableComponent.vue'
@@ -77,6 +84,7 @@ function handlerCreateAuthor() {
 
 const form = ref({
     name: '',
+    bio: '',
 })
 
 
@@ -84,10 +92,16 @@ const rules = {
     name: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
+
+    bio: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    }
 }
 
 
 const v$ = useVuelidate(rules, form)
+
+const {mutate: addAuthor} = useMutation(AUTHORS_STORE)
 
 
 function handlerPostForm() {
@@ -96,7 +110,11 @@ function handlerPostForm() {
     if (v$.value.$error)
         return
 
-    console.log(form.value)
+    
+    addAuthor({
+        name: form.value.name, 
+        bio: form.value.bio,
+    })
 }
 
 </script>
