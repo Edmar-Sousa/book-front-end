@@ -13,7 +13,18 @@
         <table-component
             :is-loading="loading"
             :data="category"
-            :columns="columns" />
+            :columns="columns">
+
+                <template #actions="slotProps">
+                    <Button class="w-10 h-10 inline-block mr-4" @click="handlerUpdateCategory(slotProps)">
+                        <Pen :size="24" />
+                    </Button>
+
+                    <Button class="w-10 h-10">
+                        <Trash :size="24" />
+                    </Button>
+                </template>
+        </table-component>
     </div>
 
     <Model
@@ -24,8 +35,8 @@
                     id="category-name"
                     type="text"
                     label="Titulo da categoria"
-                    v-model="form.name"
-                    :error="v$.name?.$errors[0]?.$message.toString" />
+                    v-model="form.title"
+                    :error="v$.title?.$errors[0]?.$message.toString" />
 
                 <div class="text-right mt-4">
                     <Button 
@@ -40,6 +51,7 @@
 <script setup lang="ts">
 
 import { computed, ref } from 'vue'
+import { Pen, Trash } from 'lucide-vue-next'
 
 import { helpers, required } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
@@ -51,9 +63,10 @@ import Button from 'primevue/button'
 
 import TableComponent from '@/components/TableComponent.vue'
 
+import { CATEGORYS_QUERY, CATEGORYS_STORE, CATEGORYS_UPDATE } from '@/querys/category'
 import { useQuery, useMutation } from '@vue/apollo-composable'
-import { CATEGORYS_QUERY, CATEGORYS_STORE } from '@/querys/category'
 import { ColumnType } from '@/interfaces/TableColumnType'
+import { CategoryType } from '@/interfaces/Category'
 
 
 
@@ -63,6 +76,7 @@ const category = computed(() =>  result.value ? result.value.listCategory : [])
 const columns: Array<ColumnType> = [
     { field: 'id', header: 'ID' },
     { field: 'title', header: 'Titulo' },
+    { field: 'actions', header: 'Ações' },
 ]
 
 
@@ -76,25 +90,23 @@ function handlerCreateCategory() {
 }
 
 
-const form = ref({
-    name: null,
+const form = ref<CategoryType>({
+    id: null,
+    title: null,
 })
 
 const rules = {
-    name: {
+    title: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
 }
 
-const { mutate: storeCategory, onDone } = useMutation(CATEGORYS_STORE)
+const { mutate: storeCategory, onDone: doneStoreCategory } = useMutation(CATEGORYS_STORE)
+const { mutate: updateCategory, onDone: doneUpdateCategory } = useMutation(CATEGORYS_UPDATE)
 
-onDone(() => {
-    if (modalRef.value)
-        modalRef.value.closeModal()
+doneStoreCategory(handlerFinishRequest)
+doneUpdateCategory(handlerFinishRequest)
 
-    form.value.name = null
-    refetchCategory()
-})
 
 const v$ = useVuelidate(rules, form)
 
@@ -106,11 +118,45 @@ function handlerCategoryForm() {
     if (v$.value.$error)
         return
 
+    if (form.value.id) {
+        updateCategory({
+            id: form.value.id,
+            title: form.value.title
+        })
+    }
 
-    storeCategory({
-        title: form.value.name,
-    })
+    else {
+        storeCategory({
+            title: form.value.title,
+        })
+    }
+
 }
 
+
+
+function handlerUpdateCategory(category: CategoryType) {
+    form.value = {
+        id: category.id,
+        title: category.title
+    }
+
+    if (modalRef.value)
+        modalRef.value.showModal()
+}
+
+
+
+function handlerFinishRequest() {
+    if (modalRef.value)
+        modalRef.value.closeModal()
+
+    form.value = {
+        id: null,
+        title: null
+    }
+
+    refetchCategory()
+}
 
 </script>

@@ -21,3 +21,12 @@ export const CATEGORYS_STORE = gql`
     }
 `
 
+
+export const CATEGORYS_UPDATE = gql`
+    mutation Category($id: Int!, $title: String!) {
+        updateCategory(id: $id, title: $title) {
+            id
+            title
+        }
+    }
+`

@@ -30,7 +30,12 @@
                     v-for="(column, index) in columns"
                     :key="index"
                     :field="column.field" 
-                    :header="column.header" />
+                    :header="column.header">
+
+                        <template #body="slotProps" v-if="$slots[column.field]">
+                            <slot :name="column.field" v-bind="slotProps.data"></slot>
+                        </template>
+                </column>
         </data-table>
     </template>
 
