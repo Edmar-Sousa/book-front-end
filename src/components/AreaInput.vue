@@ -9,7 +9,8 @@
 
         <textarea
             :id="id"
-            class="w-full min-h-[200px] rounded-lg mt-3 border border-[#3f3f46] p-4 focus:outline-none focus:ring focus:ring-[#34d399] bg-[#09090b]"></textarea>
+            class="w-full min-h-[200px] rounded-lg mt-3 border border-[#3f3f46] p-4 focus:outline-none focus:ring focus:ring-[#34d399] bg-[#09090b]"
+            v-model="model"></textarea>
     
         <small 
             v-if="hasError" 
@@ -44,6 +45,8 @@ const props = defineProps({
     }
 })
 
+
+const model = defineModel()
 
 const hasError = computed(() => props.error && props.error.length)
 
