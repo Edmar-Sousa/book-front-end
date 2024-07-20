@@ -20,7 +20,7 @@
                         <Pen :size="24" />
                     </Button>
 
-                    <Button class="w-10 h-10">
+                    <Button class="w-10 h-10" @click="handlerDeleteCategory(slotProps)">
                         <Trash :size="24" />
                     </Button>
                 </template>
@@ -63,7 +63,7 @@ import Button from 'primevue/button'
 
 import TableComponent from '@/components/TableComponent.vue'
 
-import { CATEGORYS_QUERY, CATEGORYS_STORE, CATEGORYS_UPDATE } from '@/querys/category'
+import { CATEGORYS_QUERY, CATEGORYS_STORE, CATEGORYS_UPDATE, CATEGORYS_DELETE } from '@/querys/category'
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import { ColumnType } from '@/interfaces/TableColumnType'
 import { CategoryType } from '@/interfaces/Category'
@@ -103,9 +103,11 @@ const rules = {
 
 const { mutate: storeCategory, onDone: doneStoreCategory } = useMutation(CATEGORYS_STORE)
 const { mutate: updateCategory, onDone: doneUpdateCategory } = useMutation(CATEGORYS_UPDATE)
+const { mutate: deleteCategory, onDone: doneDeleteCategory } = useMutation(CATEGORYS_DELETE)
 
 doneStoreCategory(handlerFinishRequest)
 doneUpdateCategory(handlerFinishRequest)
+doneDeleteCategory(handlerFinishRequest)
 
 
 const v$ = useVuelidate(rules, form)
@@ -157,6 +159,12 @@ function handlerFinishRequest() {
     }
 
     refetchCategory()
+}
+
+function handlerDeleteCategory(category: CategoryType) {
+    deleteCategory({
+        id: category.id,
+    })
 }
 
 </script>

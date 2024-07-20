@@ -30,3 +30,12 @@ export const CATEGORYS_UPDATE = gql`
         }
     }
 `
+
+export const CATEGORYS_DELETE = gql`
+    mutation Category($id: Int!) {
+        deleteCategory(id: $id) {
+            id
+            title
+        }
+    }
+`
