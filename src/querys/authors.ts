@@ -11,6 +11,15 @@ export const AUTHORS_QUERY = gql`
     }
 `
 
+export const AUTHORS_OPTINS = gql`
+    query AuthorQuery {
+        listAuthors {
+            id
+            name
+        }
+    }
+`
+
 export const AUTHORS_STORE = gql`
     mutation Author($name: String!, $bio: String!) {
         addAuthor(name: $name, bio: $bio) {

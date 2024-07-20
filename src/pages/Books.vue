@@ -26,13 +26,20 @@
                     type="text"
                     label="Titulo do livro:"
                     v-model="form.title"
-                    :error="v$.title?.$errors[0]?.$message.toString" />
+                    :error="v$.title?.$errors[0]?.$message.toString()" />
+
+                <text-input
+                    id="title-year"
+                    type="text"
+                    label="Ano:"
+                    v-model="form.year"
+                    :error="v$.year?.$errors[0]?.$message.toString()" />
     
                 <area-input
                     id="description"
                     label="Descrição:"
                     v-model="form.description"
-                    :error="v$.description?.$errors[0]?.$message.toString" />
+                    :error="v$.description?.$errors[0]?.$message.toString()" />
     
                 <select-input
                     id="author-select"
@@ -41,7 +48,7 @@
                     option-label="name"
                     option-value="id"
                     v-model="form.authors"
-                    :error="v$.authors?.$errors[0]?.$message.toString" />
+                    :error="v$.authors?.$errors[0]?.$message.toString()" />
     
                 <select-input
                     id="category-select"
@@ -50,7 +57,7 @@
                     option-label="name" 
                     option-value="id"
                     v-model="form.categorys"
-                    :error="v$.categorys?.$errors[0]?.$message.toString" />
+                    :error="v$.categorys?.$errors[0]?.$message.toString()" />
 
                 <div class="text-right mt-4">
                     <Button 
@@ -78,12 +85,14 @@ import TableComponent from '@/components/TableComponent.vue'
 
 import Button from 'primevue/button'
 
-import { useQuery } from '@vue/apollo-composable'
-import { BOOKS_QUERY } from '@/querys/books'
+import { useQuery, useMutation } from '@vue/apollo-composable'
 import { ColumnType } from '@/interfaces/TableColumnType'
 
+import { BOOKS_QUERY, BOOKS_STORE } from '@/querys/books'
+import { AUTHORS_OPTINS } from '@/querys/authors'
 
-const { result, loading } = useQuery(BOOKS_QUERY)
+
+const { result, loading, refetch: refetchBooks } = useQuery(BOOKS_QUERY)
 
 const books = computed(() => result.value ? result.value.listBooks : [])
 
@@ -94,13 +103,10 @@ const columns : Array<ColumnType> = [
     { field: 'year', header: 'Ano' },
 ]
 
-const authors = [
-    { id: 1, name: 'Robert C. Martin' },
-    { id: 2, name: 'Robert C. Martin' },
-    { id: 3, name: 'Robert C. Martin' },
-    { id: 4, name: 'Robert C. Martin' },
-    { id: 5, name: 'Robert C. Martin' },
-]
+const { result: authorsOptions } = useQuery(AUTHORS_OPTINS)
+
+const authors = computed(() => authorsOptions.value ? authorsOptions.value.listAuthors : [])
+
 
 const categorias = [
     { id: 1, name: 'Robert C. Martin' },
@@ -113,6 +119,7 @@ const categorias = [
 
 const form = ref({
     title: null,
+    year: null,
     description: null,
     categorys: [],
     authors: [],
@@ -122,8 +129,11 @@ const rules = {
     title: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
+    year: {
+        required: helpers.withMessage('O campo é obrigatorio', required)
+    },
     description: {
-        required: helpers.withMessage('O campo é obrigatorio', required),
+        required: helpers.withMessage('O campo é obrigatorio', required)
     },
     categorys: {
         required: helpers.withMessage('O campo é obrigatorio', required)
@@ -134,8 +144,26 @@ const rules = {
 }
 
 
+const modalRef = ref()
 const v$ = useVuelidate(rules, form)
 
+const { mutate: storeBook, onDone } = useMutation(BOOKS_STORE)
+
+
+onDone(() => {
+    if (modalRef.value)
+        modalRef.value.closeModal()
+
+    form.value = {
+        title: null,
+        year: null,
+        description: null,
+        categorys: [],
+        authors: [],
+    }
+
+    refetchBooks()
+})
 
 function handlerBookForm() {
     v$.value.$validate()
@@ -144,11 +172,16 @@ function handlerBookForm() {
     if (v$.value.$error)
         return
 
-    console.log(form.value)
+    storeBook({
+        title: form.value.title,
+        description: form.value.description,
+        year: form.value.year,
+        categorys: form.value.categorys[0],
+        authors: form.value.authors[0],
+    })
 }
 
 
-const modalRef = ref()
 
 
 function handlerCreateBooks() {

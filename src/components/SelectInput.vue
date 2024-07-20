@@ -5,7 +5,7 @@
             :for="id"
             class="text-gray-200">
                 {{ label }}
-        </label>    
+        </label>
     
         <multi-select 
             v-model="modal"
@@ -43,7 +43,6 @@ const props = defineProps({
     },
 
     options: {
-        type: Array<Object>,
         required: true,
     },
 
