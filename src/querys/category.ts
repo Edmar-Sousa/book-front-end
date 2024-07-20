@@ -11,3 +11,13 @@ export const CATEGORYS_QUERY = gql`
     }
 `
 
+
+export const CATEGORYS_STORE = gql`
+    mutation Category($title: String!) {
+        addCategory(title: $title) {
+            id
+            title
+        }
+    }
+`
+

@@ -51,13 +51,13 @@ import Button from 'primevue/button'
 
 import TableComponent from '@/components/TableComponent.vue'
 
-import { useQuery } from '@vue/apollo-composable'
-import { CATEGORYS_QUERY } from '@/querys/category'
+import { useQuery, useMutation } from '@vue/apollo-composable'
+import { CATEGORYS_QUERY, CATEGORYS_STORE } from '@/querys/category'
 import { ColumnType } from '@/interfaces/TableColumnType'
 
 
 
-const { result, loading } = useQuery(CATEGORYS_QUERY)
+const { result, loading, refetch: refetchCategory } = useQuery(CATEGORYS_QUERY)
 const category = computed(() =>  result.value ? result.value.listCategory : [])
 
 const columns: Array<ColumnType> = [
@@ -86,6 +86,15 @@ const rules = {
     },
 }
 
+const { mutate: storeCategory, onDone } = useMutation(CATEGORYS_STORE)
+
+onDone(() => {
+    if (modalRef.value)
+        modalRef.value.closeModal()
+
+    form.value.name = null
+    refetchCategory()
+})
 
 const v$ = useVuelidate(rules, form)
 
@@ -97,6 +106,10 @@ function handlerCategoryForm() {
     if (v$.value.$error)
         return
 
+
+    storeCategory({
+        title: form.value.name,
+    })
 }
 
 
