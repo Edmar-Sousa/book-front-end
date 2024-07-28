@@ -11,6 +11,14 @@ export const CATEGORYS_QUERY = gql`
     }
 `
 
+export const CATEGORYS_OPTINS = gql`
+    query CategoryQuery {
+        listCategory {
+            id
+            title
+        }
+    }
+`
 
 export const CATEGORYS_STORE = gql`
     mutation Category($title: String!) {

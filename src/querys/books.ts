@@ -24,3 +24,12 @@ export const BOOKS_STORE = gql`
         }
     }
 `
+
+export const BOOKS_DELETE = gql`
+    mutation Book($id: Int!) {
+        deleteBook(id: $id) {
+            id
+        }
+    }
+`
+
