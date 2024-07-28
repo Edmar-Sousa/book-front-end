@@ -5,7 +5,7 @@
         
         <div class="mt-10 mb-5 text-right">
             <Button 
-                @click="handlerCreateBooks"
+                @click="handlerOpenModalBooks"
                 label="Adicionar">
             </Button>
         </div>
@@ -15,16 +15,22 @@
             :data="books"
             :columns="columns">
                 <template #actions="slotProps">
-                    <!-- <Button class="w-10 h-10 inline-block mr-4" @click="handlerUpdateCategory(slotProps)">
-                        <Pen :size="24" />
-                    </Button> -->
+                    <Button 
+                        class="w-10 h-10 inline-block mr-4" 
+                        @click="handlerUpdateBook(slotProps)">
+                            <Pen :size="24" />
+                    </Button>
 
-                    <Button class="w-10 h-10" @click="handlerDeleteBook(slotProps)">
-                        <Trash :size="24" />
+                    <Button 
+                        class="w-10 h-10"
+                         @click="handlerDeleteBook(slotProps)">
+                            <Trash :size="24" />
                     </Button>
                 </template>
         </table-component>
     </div>
+
+    {{ form }}
 
     <Model
         ref="modalRef"
@@ -57,7 +63,7 @@
                     :options="authors"
                     option-label="name"
                     option-value="id"
-                    v-model="form.authors"
+                    v-model="form.author_id"
                     :error="v$.authors?.$errors[0]?.$message.toString()" />
     
                 <select-input
@@ -66,7 +72,7 @@
                     :options="categorias"
                     option-label="title" 
                     option-value="id"
-                    v-model="form.categorys"
+                    v-model="form.category_id"
                     :error="v$.categorys?.$errors[0]?.$message.toString()" />
 
                 <div class="text-right mt-4">
@@ -99,7 +105,7 @@ import Button from 'primevue/button'
 import { useQuery, useMutation } from '@vue/apollo-composable'
 import { ColumnType } from '@/interfaces/TableColumnType'
 
-import { BOOKS_QUERY, BOOKS_STORE, BOOKS_DELETE } from '@/querys/books'
+import { BOOKS_QUERY, BOOKS_STORE, BOOKS_DELETE, BOOKS_UPDATE } from '@/querys/books'
 import { AUTHORS_OPTINS } from '@/querys/authors'
 import { CATEGORYS_OPTINS } from '@/querys/category'
 import { BookType } from '@/interfaces/Book'
@@ -124,12 +130,13 @@ const authors = computed(() => authorsOptions.value ? authorsOptions.value.listA
 const categorias = computed(() => categorysOptions.value ? categorysOptions.value.listCategory : [])
 
 
-const form = ref({
+const form = ref<BookType>({
+    id: null,
     title: null,
     year: null,
     description: null,
-    categorys: [],
-    authors: [],
+    category_id: [],
+    author_id: [],
 })
 
 const rules = {
@@ -142,10 +149,10 @@ const rules = {
     description: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
-    categorys: {
+    category_id: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
-    authors: {
+    author_id: {
         required: helpers.withMessage('O campo é obrigatorio', required)
     },
 }
@@ -156,9 +163,11 @@ const v$ = useVuelidate(rules, form)
 
 const { mutate: storeBook, onDone: doneStoreBook } = useMutation(BOOKS_STORE)
 const { mutate: deleteBook, onDone: doneDeleteBook } = useMutation(BOOKS_DELETE)
+const { mutate: updateBook, onDone: doneUpdateBook } = useMutation(BOOKS_UPDATE)
 
 doneStoreBook(handlerFinishRequest)
 doneDeleteBook(handlerFinishRequest)
+doneUpdateBook(handlerFinishRequest)
 
 
 function handlerFinishRequest () {
@@ -166,11 +175,13 @@ function handlerFinishRequest () {
         modalRef.value.closeModal()
 
     form.value = {
+        id: null,
+
         title: null,
         year: null,
         description: null,
-        categorys: [],
-        authors: [],
+        category_id: [],
+        author_id: [],
     }
 
     refetchBooks()
@@ -183,19 +194,56 @@ function handlerBookForm() {
     if (v$.value.$error)
         return
 
-    storeBook({
-        title: form.value.title,
-        description: form.value.description,
-        year: form.value.year,
-        categorys: form.value.categorys[0],
-        authors: form.value.authors[0],
-    })
+
+    if (form.value.id) {
+        updateBook({
+            id: form.value.id,
+            title: form.value.title,
+            description: form.value.description,
+            year: form.value.year,
+            categorys: (form.value.category_id as number[])[0],
+            authors: (form.value.author_id as number[])[0],
+        })
+    }
+
+    else {
+        storeBook({
+            title: form.value.title,
+            description: form.value.description,
+            year: form.value.year,
+            categorys: (form.value.category_id as number[])[0],
+            authors: (form.value.author_id as number[])[0],
+        })
+    }
+
 }
 
 
+function handlerUpdateBook(book: BookType) {
+    
+    let categorisId = form.value.category_id
+    let authorId = form.value.author_id
+
+    if (typeof book.category_id == 'number' && typeof book.author_id == 'number') {
+        categorisId = [book.category_id]
+        authorId = [book.author_id]
+    }
 
 
-function handlerCreateBooks() {
+    form.value = {
+        id: book.id,
+        title: book.title,
+        year: book.year,
+        description: book.description,
+        category_id: categorisId,
+        author_id: authorId,
+    }
+
+    handlerOpenModalBooks()
+
+}
+
+function handlerOpenModalBooks() {
     if (modalRef.value)
         modalRef.value?.showModal()
 }

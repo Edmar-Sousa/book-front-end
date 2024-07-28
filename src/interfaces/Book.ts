@@ -1,8 +1,8 @@
 export interface BookType {
     id?: null
-    title: string
-    description: string
-    year: string
-    categorys: number
-    authors: number
+    title: string | null
+    description: string | null
+    year: string | null
+    category_id: number[] | number
+    author_id: number[] | number
 }

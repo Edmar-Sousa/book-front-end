@@ -9,6 +9,8 @@ export const BOOKS_QUERY = gql`
             title
             description
             year
+            author_id
+            category_id
         }
     }
 `
@@ -21,6 +23,19 @@ export const BOOKS_STORE = gql`
             title
             description
             year
+        }
+    }
+`
+
+export const BOOKS_UPDATE = gql`
+    mutation Book($id: Int!, $title: String!, $description: String!, $year: String!, $categorys: Int!, $authors: Int!) {
+        updateBook(id: $id, title: $title, description: $description, year: $year, author_id: $authors, category_id: $categorys) {
+            id
+            title 
+            description
+            year
+            author_id
+            category_id
         }
     }
 `
