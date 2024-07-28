@@ -6,14 +6,29 @@
         <div class="mt-10 mb-5 text-right">
             <Button 
                 label="Adicionar"
-                @click="handlerCreateAuthor">
+                @click="handlerOpenModalAuthor">
             </Button>
         </div>
 
         <table-component
             :is-loading="loading"
             :data="authors"
-            :columns="columns" />
+            :columns="columns">
+
+                <template #actions="slotProps">
+                    <Button 
+                        class="w-10 h-10 inline-block mr-4" 
+                        @click="handlerUpdateAuthor(slotProps)">
+                            <Pen :size="24" />
+                    </Button>
+
+                    <Button 
+                        class="w-10 h-10" 
+                        @click="handlerDeleteAuthor(slotProps.id)">
+                            <Trash :size="24" />
+                    </Button>
+                </template>
+        </table-component>
     </div>
 
 
@@ -51,6 +66,9 @@
 import { computed, ref } from 'vue'
 import { helpers, required } from '@vuelidate/validators'
 
+import { Pen, Trash } from 'lucide-vue-next'
+
+
 import useVuelidate from '@vuelidate/core'
 import Model from '@/components/Modal.vue'
 import TextInput from '@/components/TextInput.vue'
@@ -58,10 +76,11 @@ import TextInput from '@/components/TextInput.vue'
 import Button from 'primevue/button'
 
 import { useQuery, useMutation } from '@vue/apollo-composable'
-import { AUTHORS_QUERY, AUTHORS_STORE } from '@/querys/authors'
+import { AUTHORS_QUERY, AUTHORS_STORE, AUTHOR_DELETE, AUTHOR_UPDATE } from '@/querys/authors'
 import { ColumnType } from '@/interfaces/TableColumnType'
 
 import TableComponent from '@/components/TableComponent.vue'
+import { AuthorType } from '@/interfaces/Author'
 
 
 const { result, loading, refetch: refetchAuthors } = useQuery(AUTHORS_QUERY)
@@ -74,15 +93,17 @@ const columns: Array<ColumnType> = [
     { field: 'id', header: 'Id' },
     { field: 'name', header: 'Title' },
     { field: 'bio', header: 'Ano' },
+    { field: 'actions', header: 'Ações' },
 ]
 
-function handlerCreateAuthor() {
+function handlerOpenModalAuthor() {
     if (modalRef.value)
         modalRef.value?.showModal()
 }
 
 
-const form = ref({
+const form = ref<AuthorType>({
+    id: null,
     name: '',
     bio: '',
 })
@@ -103,17 +124,14 @@ const v$ = useVuelidate(rules, form)
 
 
 const {mutate: addAuthor, onDone: doneStoreAuthor} = useMutation(AUTHORS_STORE)
+const {mutate: deleteAuthor, onDone: doneDeleteAuthor} = useMutation(AUTHOR_DELETE)
+const {mutate: updateAuthor, onDone: doneUpdateAuthor} = useMutation(AUTHOR_UPDATE)
 
 
-doneStoreAuthor(() => {
-    form.value = {
-        name: '',
-        bio: '',
-    }
+doneStoreAuthor(handlerFinishRequest)
+doneUpdateAuthor(handlerFinishRequest)
+doneDeleteAuthor(handlerFinishRequest)
 
-    modalRef.value.closeModal()
-    refetchAuthors()
-})
 
 function handlerPostForm() {
     v$.value.$validate()
@@ -121,10 +139,49 @@ function handlerPostForm() {
     if (v$.value.$error)
         return
 
+    if (form.value.id) {
+        updateAuthor({
+            id: form.value.id,
+            name: form.value.name,
+            bio: form.value.bio,
+        })
+    }
+
+    else {
+        addAuthor({
+            name: form.value.name, 
+            bio: form.value.bio,
+        })
+    }
     
-    addAuthor({
-        name: form.value.name, 
-        bio: form.value.bio,
+}
+
+function handlerFinishRequest() {
+    if (modalRef.value)
+        modalRef.value.closeModal()
+
+    form.value = {
+        id: null,
+        name: '',
+        bio: '',
+    }
+
+    refetchAuthors()
+}
+
+function handlerUpdateAuthor(author: AuthorType) {
+    form.value = {
+        id: author.id,
+        name: author.name,
+        bio: author.bio,
+    }
+
+    handlerOpenModalAuthor()
+}
+
+function handlerDeleteAuthor(author: AuthorType) {
+    deleteAuthor({
+        id: author.id,
     })
 }
 
